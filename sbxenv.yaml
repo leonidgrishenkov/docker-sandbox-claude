@@ -1,0 +1,33 @@
+# Docker Sandboxes environment file for Claude Code (`sbx env`, experimental).
+#
+# From the project you want Claude to work on:
+#
+#   sbx env plan ~/Code/personal/docker-sandbox-claude --env-arg project=$PWD
+#   sbx env run  ~/Code/personal/docker-sandbox-claude --env-arg project=$PWD
+#
+# Keep this file outside the project it mounts, so the agent cannot change it.
+# Workspace, sandboxOptions, and secrets apply only when the sandbox is created;
+# to change them, run `sbx env rm` and create it again.
+schemaVersion: "1"
+agent: claude
+
+args:
+  project:
+    description: Absolute path of the project to mount
+    required: true
+
+workspace:
+  path: ${{ env.args.project }}
+  # The agent works on a private clone; the host repository is mounted
+  # read-only. Fetch its work with `git fetch sandbox-<name>`.
+  clone: true
+
+env:
+  # No telemetry or error reporting.
+  CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC: "1"
+
+sandboxOptions:
+  cpus: 4
+  memory: 8g
+  # No shared skills store between sandboxes.
+  skills: off
